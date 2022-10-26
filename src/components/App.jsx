@@ -1,16 +1,11 @@
 import { Component } from 'react';
-import { Modal } from './Modal/Modal';
+// import { Modal } from './Modal/Modal';
 import { Searchbar } from './Searchbar/Searchbar';
 import { Loader } from './Loader/Loader';
-import { Fragment } from 'react';
 import { ImageGallery } from './ImageGallery/ImageGallery';
 import { ButtonMore } from './Button/Button';
 import { Container } from './App.styled.js';
 import axios from 'axios';
-
-// Your API key: 29789074-1225e0ee7727dd30a4d9fda5f
-
-//https:pixabay.com/api/?q=cat&page=1&key=29789074-1225e0ee7727dd30a4d9fda5f&image_type=photo&orientation=horizontal&per_page=12
 
 export class App extends Component {
   state = {
@@ -64,7 +59,7 @@ export class App extends Component {
         )} */}
         <Loader isLoading={isLoading} />
         <ImageGallery images={images} />
-        {images.length > 0 && <ButtonMore onClick={this.state.page} />}
+        {images.length > 0 && <ButtonMore onClick={page} />}
       </Container>
     );
   }

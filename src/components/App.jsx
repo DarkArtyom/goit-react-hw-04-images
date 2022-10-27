@@ -39,6 +39,7 @@ export class App extends Component {
       }
     } catch (error) {
       toast(`You have an ${error}`);
+      this.setState({ isLoading: false });
     }
   }
 

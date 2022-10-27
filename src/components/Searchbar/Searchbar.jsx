@@ -1,6 +1,6 @@
-// import PropTypes from 'prop-types';
+import PropTypes from 'prop-types';
 import { Component } from 'react';
-
+import { toast } from 'react-toastify';
 import {
   SearchForm,
   SearchFormButton,
@@ -16,21 +16,25 @@ export class Searchbar extends Component {
 
   handleImageName = event => {
     this.setState({ imageName: event.currentTarget.value.toLowerCase() });
-    console.log(this.state.imageName);
   };
 
   handleSubmit = evt => {
+    const { imageName } = this.state;
     evt.preventDefault();
 
-    if (this.state.imageName.trim() === '') {
-      alert('Enter image for search');
+    if (imageName.trim() === '') {
+      toast('Enter image for search');
       return;
     }
-    this.props.onInputSumbit(this.state.imageName);
+    this.props.onInputSumbit(imageName);
     this.setState({ imageName: '' });
   };
 
   render() {
+    this.PropTypes = {
+      imageName: PropTypes.string.isRequired,
+    };
+
     return (
       <SearchBarHeader>
         <SearchForm onSubmit={this.handleSubmit}>
@@ -41,7 +45,7 @@ export class Searchbar extends Component {
           <SearchInput
             type="text"
             autocomplete="off"
-            // autofocus
+            autoFocus
             placeholder="Search images and photos"
             value={this.state.imageName}
             onChange={this.handleImageName}

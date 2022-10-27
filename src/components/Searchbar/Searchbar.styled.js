@@ -35,7 +35,7 @@ export const SearchFormButton = styled.button`
   width: 48px;
   height: 48px;
   border: 0;
-  /* background-image: url('https://www.svgrepo.com/svg/19676/search'); */
+  background-image: url('https://www.svgrepo.com/svg/19676/search');
   background-size: 40%;
   background-repeat: no-repeat;
   background-position: center;

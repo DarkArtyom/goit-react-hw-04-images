@@ -1,6 +1,7 @@
 import PropTypes from 'prop-types';
 import { Component } from 'react';
 import { toast } from 'react-toastify';
+import { FcSearch } from 'react-icons/fc';
 import {
   SearchForm,
   SearchFormButton,
@@ -39,6 +40,7 @@ export class Searchbar extends Component {
       <SearchBarHeader>
         <SearchForm onSubmit={this.handleSubmit}>
           <SearchFormButton type="submit">
+            <FcSearch />
             <SpanButtonLabel>Search</SpanButtonLabel>
           </SearchFormButton>
 

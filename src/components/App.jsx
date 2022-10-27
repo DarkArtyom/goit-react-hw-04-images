@@ -25,7 +25,7 @@ export class App extends Component {
       if (prevState.page !== page || prevState.imageName !== imageName) {
         this.setState({ isLoading: true });
         const response = await axios.get(
-          `https:pixabay.com/api/?q=${imageName}&page=${page}&key=29789074-1225e0ee7727dd30a4d9fda5f&image_type=photo&orientation=horizontal&per_page=12`
+          `https://pixabay.com/api/?q=${imageName}&page=${page}&key=29789074-1225e0ee7727dd30a4d9fda5f&image_type=photo&orientation=horizontal&per_page=12`
         );
         if (response.data.total === 0 || response.data.hits.length === 0) {
           this.setState({ isLoading: false });

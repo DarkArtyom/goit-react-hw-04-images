@@ -1,34 +1,38 @@
-import { Component } from 'react';
+import { useEffect } from 'react';
 import { Backdrop, ModalWindow } from './Modal.styled';
+import PropTypes from 'prop-types';
 
-export class Modal extends Component {
-  componentDidMount() {
-    window.addEventListener('keyup', this.handleEsc);
-  }
+export const Modal = ({ onClose, picureUrl }) => {
+  useEffect(() => {
+    const handleEsc = event => {
+      if (event.code === 'Escape') {
+        onClose();
+      }
+    };
 
-  componentWillUnmount() {
-    window.removeEventListener('keyup', this.handleEsc);
-  }
+    window.addEventListener('keyup', handleEsc);
 
-  handleEsc = event => {
-    if (event.code === 'Escape') {
-      this.props.onClose();
-    }
-  };
+    return () => {
+      window.removeEventListener('keyup', handleEsc);
+    };
+  });
 
-  handleBackDropClick = evt => {
+  const handleBackDropClick = evt => {
     if (evt.currentTarget === evt.target) {
-      this.props.onClose();
+      onClose();
     }
   };
 
-  render() {
-    return (
-      <Backdrop onClick={this.handleBackDropClick}>
-        <ModalWindow>
-          <img src={this.props.picureUrl} alt="pictureArt" />
-        </ModalWindow>
-      </Backdrop>
-    );
-  }
-}
+  return (
+    <Backdrop onClick={handleBackDropClick}>
+      <ModalWindow>
+        <img src={picureUrl} alt="pictureArt" />
+      </ModalWindow>
+    </Backdrop>
+  );
+};
+
+Modal.propTypes = {
+  onClose: PropTypes.func.isRequired,
+  picureUrl: PropTypes.string.isRequired,
+};

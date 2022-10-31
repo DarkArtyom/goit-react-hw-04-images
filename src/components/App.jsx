@@ -1,4 +1,4 @@
-import { Component } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { Modal } from './Modal/Modal';
 import { Searchbar } from './Searchbar/Searchbar';
 import { Loader } from './Loader/Loader';
@@ -9,75 +9,72 @@ import axios from 'axios';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 
-export class App extends Component {
-  state = {
-    page: 1,
-    images: [],
-    imageName: '',
-    showModal: false,
-    isLoading: false,
-    modalPictureUrl: '',
-  };
+export const App = () => {
+  const [page, setPage] = useState(1);
+  const [images, setImages] = useState([]);
+  const [imageName, setImageName] = useState('');
+  const [showModal, setShowModal] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
+  const [modalPictureUrl, setModalPictureUrl] = useState('');
+  const isFirstRender = useRef(true);
 
-  async componentDidUpdate(_, prevState) {
-    const { page, imageName } = this.state;
-    try {
-      if (prevState.page !== page || prevState.imageName !== imageName) {
-        this.setState({ isLoading: true });
+  useEffect(() => {
+    (async function () {
+      try {
+        if (isFirstRender.current) {
+          isFirstRender.current = false;
+          return;
+        }
+        if (imageName === '') {
+          return;
+        }
+        setIsLoading(true);
         const response = await axios.get(
           `https://pixabay.com/api/?q=${imageName}&page=${page}&key=29789074-1225e0ee7727dd30a4d9fda5f&image_type=photo&orientation=horizontal&per_page=12`
         );
+        console.log(response);
         if (response.data.total === 0 || response.data.hits.length === 0) {
-          this.setState({ isLoading: false });
+          setIsLoading(false);
           toast('Sorry, there is no images on your request');
         }
-        toast('Response successful');
-        this.setState(prevState => ({
-          images: [...prevState.images, ...response.data.hits],
-          isLoading: false,
-        }));
+        setImages(p => [...p, ...response.data.hits]);
+        setIsLoading(false);
+      } catch (error) {
+        toast(`You have an ${error}`);
+      } finally {
+        setIsLoading(false);
       }
-    } catch (error) {
-      toast(`You have an ${error}`);
-      this.setState({ isLoading: false });
-    }
-  }
+    })();
+  }, [page, imageName]);
 
-  onModalOpen = e => {
+  const onModalOpen = e => {
     const pictureUrl = e.target.getAttribute('data-url');
-    this.setState({ modalPictureUrl: pictureUrl });
-    this.toggleModal();
+    setModalPictureUrl(pictureUrl);
+    toggleModal();
   };
 
-  toggleModal = () => {
-    this.setState(({ showModal }) => ({
-      showModal: !showModal,
-    }));
+  const toggleModal = () => {
+    setShowModal(!showModal);
   };
 
-  handleSubmitForm = imageName => {
-    this.setState({ imageName, page: 1, images: [] });
+  const handleSubmitForm = imageName => {
+    setImageName(imageName);
+    setPage(1);
+    setImages([]);
   };
 
-  loadMore = () => {
-    this.setState(prevState => ({
-      page: prevState.page + 1,
-    }));
+  const loadMore = () => {
+    setPage(prev => prev + 1);
   };
 
-  render() {
-    const { isLoading, images, modalPictureUrl } = this.state;
-    return (
-      <Container>
-        <Searchbar onInputSumbit={this.handleSubmitForm} />
-        {this.state.showModal && (
-          <Modal onClose={this.toggleModal} picureUrl={modalPictureUrl} />
-        )}
-        <Loader isLoading={isLoading} />
-        <ImageGallery images={images} openModal={this.onModalOpen} />
-        {images.length > 11 && <ButtonMore onClick={this.loadMore} />}
-        <ToastContainer />
-      </Container>
-    );
-  }
-}
+  return (
+    <Container>
+      <Searchbar onInputSubmit={handleSubmitForm} />
+      {showModal && <Modal onClose={toggleModal} picureUrl={modalPictureUrl} />}
+      <Loader isLoading={isLoading} />
+      <ImageGallery images={images} openModal={onModalOpen} />
+      {images.length > 11 && <ButtonMore onClick={loadMore} />}
+      <ToastContainer />
+    </Container>
+  );
+};

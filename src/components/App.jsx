@@ -5,9 +5,10 @@ import { Loader } from './Loader/Loader';
 import { ImageGallery } from './ImageGallery/ImageGallery';
 import { ButtonMore } from './Button/Button';
 import { Container } from './App.styled.js';
-import axios from 'axios';
+// import axios from 'axios';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
+import imageApi from './services/fetchApi';
 
 export const App = () => {
   const [page, setPage] = useState(1);
@@ -16,6 +17,7 @@ export const App = () => {
   const [showModal, setShowModal] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [modalPictureUrl, setModalPictureUrl] = useState('');
+  const [hitsFromFetch, setHitsFromFetch] = useState([]);
   const isFirstRender = useRef(true);
 
   useEffect(() => {
@@ -29,15 +31,13 @@ export const App = () => {
           return;
         }
         setIsLoading(true);
-        const response = await axios.get(
-          `https://pixabay.com/api/?q=${imageName}&page=${page}&key=29789074-1225e0ee7727dd30a4d9fda5f&image_type=photo&orientation=horizontal&per_page=12`
+        const dataFetch = await imageApi.responseApi(
+          imageName,
+          page,
+          setIsLoading,
+          setHitsFromFetch
         );
-        console.log(response);
-        if (response.data.total === 0 || response.data.hits.length === 0) {
-          setIsLoading(false);
-          toast('Sorry, there is no images on your request');
-        }
-        setImages(p => [...p, ...response.data.hits]);
+        setImages(p => [...p, ...dataFetch]);
         setIsLoading(false);
       } catch (error) {
         toast(`You have an ${error}`);
@@ -61,6 +61,7 @@ export const App = () => {
     setImageName(imageName);
     setPage(1);
     setImages([]);
+    setHitsFromFetch([]);
   };
 
   const loadMore = () => {
@@ -73,7 +74,9 @@ export const App = () => {
       {showModal && <Modal onClose={toggleModal} picureUrl={modalPictureUrl} />}
       <Loader isLoading={isLoading} />
       <ImageGallery images={images} openModal={onModalOpen} />
-      {images.length > 11 && <ButtonMore onClick={loadMore} />}
+      {hitsFromFetch.length > 11 && !isLoading && (
+        <ButtonMore onClick={loadMore} />
+      )}
       <ToastContainer />
     </Container>
   );

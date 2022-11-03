@@ -5,7 +5,6 @@ import { Loader } from './Loader/Loader';
 import { ImageGallery } from './ImageGallery/ImageGallery';
 import { ButtonMore } from './Button/Button';
 import { Container } from './App.styled.js';
-// import axios from 'axios';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import imageApi from './services/fetchApi';
@@ -31,13 +30,22 @@ export const App = () => {
           return;
         }
         setIsLoading(true);
-        const dataFetch = await imageApi.responseApi(
-          imageName,
-          page,
-          setIsLoading,
-          setHitsFromFetch
+        const dataFetch = await imageApi.responseApi(imageName, page);
+        console.log(dataFetch);
+        if (dataFetch.length === 0) {
+          setIsLoading(false);
+          toast('Sorry, there is no images on your request');
+        }
+        setHitsFromFetch(dataFetch.data.hits);
+        const dataFromFetch = dataFetch.data.hits.map(
+          ({ id, tags, webformatURL, largeImageURL }) => ({
+            id,
+            tags,
+            webformatURL,
+            largeImageURL,
+          })
         );
-        setImages(p => [...p, ...dataFetch]);
+        setImages(p => [...p, ...dataFromFetch]);
         setIsLoading(false);
       } catch (error) {
         toast(`You have an ${error}`);

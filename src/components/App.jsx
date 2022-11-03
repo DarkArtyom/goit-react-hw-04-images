@@ -31,7 +31,7 @@ export const App = () => {
         }
         setIsLoading(true);
         const dataFetch = await imageApi.responseApi(imageName, page);
-        console.log(dataFetch);
+
         if (dataFetch.length === 0) {
           setIsLoading(false);
           toast('Sorry, there is no images on your request');
